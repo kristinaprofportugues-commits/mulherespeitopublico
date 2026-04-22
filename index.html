@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mulher Respeito</title>
+
+<style>
+body{
+font-family:Arial, sans-serif;
+margin:0;
+padding:20px;
+background:#f5f5f5;
+text-align:center;
+}
+.container{
+max-width:700px;
+margin:auto;
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+button{
+padding:12px 20px;
+font-size:18px;
+border:none;
+border-radius:8px;
+background:#7b2cbf;
+color:white;
+cursor:pointer;
+margin-top:20px;
+}
+button:hover{
+background:#5a189a;
+}
+select{
+padding:10px;
+font-size:18px;
+width:100%;
+margin-top:15px;
+}
+.pergunta{
+font-size:22px;
+margin-top:20px;
+}
+.opcao{
+display:block;
+background:#eee;
+padding:12px;
+margin:10px 0;
+border-radius:8px;
+cursor:pointer;
+}
+.opcao:hover{
+background:#ddd;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🎗 Mulher: Respeito</h1>
+
+<p>Pesquisa interativa de conscientização</p>
+
+<div id="inicio">
+
+<p>Selecione sua categoria:</p>
+
+<select id="categoria">
+<option>Professor</option>
+<option>Estudante</option>
+<option>Profissional administrativo</option>
+<option>Outros</option>
+</select>
+
+<button onclick="iniciar()">Começar</button>
+
+</div>
+
+<div id="jogo" style="display:none;">
+
+<div class="pergunta" id="pergunta"></div>
+
+<div id="respostas"></div>
+
+</div>
+
+<div id="fim" style="display:none;">
+
+<h2>Obrigado por participar!</h2>
+
+<p id="resultado"></p>
+
+</div>
+
+</div>
+
+<script>
+
+let perguntas = [
+{
+p:"Se uma mulher sofre ameaças em casa, isso é:",
+r:["Brincadeira","Violência doméstica","Discussão normal"],
+c:1
+},
+{
+p:"Em emergência imediata, deve ligar para:",
+r:["180","190","Nenhum"],
+c:1
+},
+{
+p:"Divulgar fotos íntimas sem permissão é:",
+r:["Crime","Piada","Normal"],
+c:0
+}
+];
+
+let atual=0;
+let pontos=0;
+let categoria="";
+
+function iniciar(){
+categoria=document.getElementById("categoria").value;
+document.getElementById("inicio").style.display="none";
+document.getElementById("jogo").style.display="block";
+mostrar();
+}
+
+function mostrar(){
+
+let q=perguntas[atual];
+
+document.getElementById("pergunta").innerHTML=q.p;
+
+let html="";
+
+q.r.forEach((item,i)=>{
+html+=`<div class='opcao' onclick='responder(${i})'>${item}</div>`;
+});
+
+document.getElementById("respostas").innerHTML=html;
+
+}
+
+function responder(i){
+
+if(i==perguntas[atual].c){
+pontos++;
+}
+
+atual++;
+
+if(atual<perguntas.length){
+mostrar();
+}else{
+finalizar();
+}
+
+}
+
+function finalizar(){
+
+document.getElementById("jogo").style.display="none";
+document.getElementById("fim").style.display="block";
+
+document.getElementById("resultado").innerHTML=
+"Categoria: "+categoria+"<br>Pontuação: "+pontos+" de "+perguntas.length;
+
+}
+
+</script>
+
+</body>
+</html>
