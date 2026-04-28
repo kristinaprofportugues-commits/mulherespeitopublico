@@ -1,253 +1,846 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mulher: Respeito</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mapa da Proteção | Jogo Interativo</title>
+  <style>
+    :root {
+      --bg-1: #f4f7fb;
+      --bg-2: #eef6f4;
+      --card: rgba(255,255,255,0.92);
+      --line: #d9e3f0;
+      --text: #203047;
+      --muted: #5c6b7f;
+      --primary: #173f73;
+      --primary-2: #24579a;
+      --accent: #f28c28;
+      --accent-2: #ffb15a;
+      --success: #157347;
+      --success-bg: #eaf8f0;
+      --danger: #b42318;
+      --danger-bg: #fff1f0;
+      --shadow: 0 18px 40px rgba(25, 54, 98, 0.14);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+    }
 
-<style>
-body {
-font-family: 'Segoe UI', sans-serif;
-background: linear-gradient(135deg, #6a0dad, #b19cd9);
-margin: 0;
-padding: 20px;
-color: #333;
-}
+    * { box-sizing: border-box; }
 
-.container {
-max-width: 700px;
-margin: auto;
-background: white;
-padding: 25px;
-border-radius: 12px;
-box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-text-align: center;
-}
+    html { scroll-behavior: smooth; }
 
-h1 {
-color: #6a0dad;
-}
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(36,87,154,.10), transparent 34%),
+        radial-gradient(circle at top right, rgba(242,140,40,.10), transparent 28%),
+        linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
+      min-height: 100vh;
+    }
 
-button {
-padding: 12px 20px;
-margin: 8px;
-border: none;
-border-radius: 10px;
-background: #6a0dad;
-color: white;
-font-size: 16px;
-cursor: pointer;
-transition: 0.3s;
-}
+    .grid-bg::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(23,63,115,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23,63,115,.05) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,.55), transparent 92%);
+    }
 
-button:hover {
-background: #4b0082;
-}
+    .wrap {
+      position: relative;
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 18px;
+    }
 
-select {
-padding: 10px;
-font-size: 16px;
-border-radius: 8px;
-}
+    .hero, .panel {
+      background: var(--card);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,.7);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius-xl);
+    }
 
-.hidden {
-display: none;
-}
+    .hero {
+      padding: 28px;
+      margin-top: 18px;
+      overflow: hidden;
+      position: relative;
+    }
 
-.progress {
-height: 10px;
-background: #ddd;
-border-radius: 5px;
-margin-bottom: 15px;
-overflow: hidden;
-}
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      right: -90px;
+      top: -90px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(36,87,154,.16) 0%, rgba(36,87,154,.03) 60%, transparent 70%);
+    }
 
-.progress-bar {
-height: 10px;
-background: #6a0dad;
-width: 0%;
-}
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #edf3ff;
+      color: var(--primary);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: .92rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
 
-</style>
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      line-height: 1.04;
+      color: var(--primary);
+      max-width: 700px;
+    }
+
+    .sub {
+      font-size: 1.08rem;
+      line-height: 1.6;
+      max-width: 720px;
+      color: var(--muted);
+      margin-top: 14px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .chip {
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: linear-gradient(135deg, #eff5ff, #f9fbff);
+      border: 1px solid #dbe7fa;
+      color: var(--primary);
+      font-size: .95rem;
+      font-weight: 700;
+    }
+
+    .notice {
+      margin-top: 20px;
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      border-left: 6px solid var(--accent);
+      background: #fff8ef;
+      color: #5f4323;
+      line-height: 1.55;
+      position: relative;
+      z-index: 1;
+    }
+
+    .category-card {
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 18px;
+      background: #f7fbff;
+      border: 1px solid #dbe7fa;
+      position: relative;
+      z-index: 1;
+      max-width: 580px;
+    }
+
+    .category-card label {
+      display: block;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .category-card select {
+      width: 100%;
+      border: 2px solid #d6e2f2;
+      border-radius: 16px;
+      padding: 13px 14px;
+      font-size: 1rem;
+      color: var(--text);
+      background: #fff;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 16px;
+      padding: 14px 18px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(23,63,115,.22);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(242,140,40,.2);
+    }
+
+    .screen { display: none; margin-top: 18px; }
+    .screen.active { display: block; }
+
+    .panel { padding: 22px; }
+
+    .topbar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .status-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: #f4f8ff;
+      color: var(--primary);
+      border: 1px solid #dbe6f7;
+      font-weight: 700;
+      font-size: .95rem;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: #e9eef7;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 10%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), var(--primary-2));
+      transition: width .2s ease;
+    }
+
+    .question-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #eef7f2;
+      border: 1px solid #d7efdf;
+      color: var(--success);
+      font-size: .9rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .question-title {
+      margin: 0 0 12px;
+      font-size: clamp(1.35rem, 3vw, 1.8rem);
+      color: var(--primary);
+      line-height: 1.2;
+    }
+
+    .situation {
+      position: relative;
+      background: linear-gradient(180deg, #fbfdff 0%, #f5f9ff 100%);
+      border: 2px dashed #ccd9ee;
+      border-radius: 18px;
+      padding: 18px;
+      line-height: 1.65;
+      font-size: 1.04rem;
+      margin-bottom: 18px;
+    }
+
+    .situation::before {
+      content: "Situação";
+      position: absolute;
+      top: -12px;
+      left: 14px;
+      background: #fff;
+      padding: 0 8px;
+      color: var(--primary-2);
+      font-size: .84rem;
+      font-weight: 700;
+    }
+
+    .options {
+      display: grid;
+      gap: 12px;
+    }
+
+    .option {
+      width: 100%;
+      text-align: left;
+      border: 2px solid #d6e2f2;
+      border-radius: 18px;
+      padding: 16px;
+      background: linear-gradient(180deg, #ffffff, #fbfdff);
+      color: var(--text);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: .16s ease;
+      box-shadow: 0 6px 14px rgba(27, 52, 93, 0.05);
+    }
+
+    .option:hover {
+      transform: translateY(-1px);
+      border-color: #a9c0e8;
+      box-shadow: 0 10px 18px rgba(27, 52, 93, 0.08);
+    }
+
+    .option.correct {
+      border-color: #8fd1aa;
+      background: linear-gradient(180deg, #f4fff8, #e9faef);
+      color: var(--success);
+      font-weight: 700;
+    }
+
+    .option.wrong {
+      border-color: #efb3ae;
+      background: linear-gradient(180deg, #fff7f6, #fff0ef);
+      color: var(--danger);
+      font-weight: 700;
+    }
+
+    .feedback {
+      display: none;
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 18px;
+      line-height: 1.6;
+      font-size: .98rem;
+    }
+
+    .feedback.show { display: block; }
+    .feedback.ok { background: var(--success-bg); border: 2px solid #bfe6cd; }
+    .feedback.no { background: var(--danger-bg); border: 2px solid #efc0bc; }
+
+    .bottom-actions {
+      margin-top: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .microcopy {
+      color: var(--muted);
+      font-size: .93rem;
+    }
+
+    .result-box { text-align: center; }
+
+    .medal {
+      width: 96px;
+      height: 96px;
+      margin: 0 auto 14px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ffe4ba, #ffbb63);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 18px 34px rgba(242,140,40,.22);
+      color: #7b4d11;
+      font-size: 2rem;
+    }
+
+    .level {
+      display: inline-block;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: #eef6ff;
+      border: 1px solid #dbe8fb;
+      color: var(--primary);
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .score {
+      font-size: clamp(2.4rem, 8vw, 4.3rem);
+      color: var(--primary);
+      font-weight: 800;
+      margin: 8px 0 12px;
+    }
+
+    .summary {
+      max-width: 720px;
+      margin: 0 auto;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .review {
+      margin-top: 22px;
+      display: grid;
+      gap: 12px;
+      text-align: left;
+    }
+
+    .review-item {
+      background: #fcfdff;
+      border: 1px solid #dce6f4;
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .review-item h4 {
+      margin: 0 0 8px;
+      color: var(--primary);
+      font-size: 1.03rem;
+    }
+
+    .review-badge {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: .86rem;
+      font-weight: 700;
+    }
+
+    .review-badge.ok { background: #eaf8f0; color: var(--success); }
+    .review-badge.no { background: #fff2f0; color: var(--danger); }
+
+    .footer-note {
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #f5f9ff, #eff5fc);
+      border: 1px solid #dde8f7;
+      color: #4d5f77;
+      line-height: 1.6;
+      font-size: .94rem;
+    }
+
+    @media (max-width: 720px) {
+      .wrap { padding: 12px; }
+      .hero, .panel { padding: 16px; border-radius: 22px; }
+      .topbar { align-items: flex-start; }
+      .bottom-actions { justify-content: center; }
+      .btn { width: 100%; }
+      .hero-actions .btn { width: auto; }
+    }
+  </style>
 </head>
 
-<body>
+<body class="grid-bg">
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">🛡️ Jogo interativo sobre rede de proteção</div>
+      <h1>Mapa da Proteção</h1>
+      <p class="sub">
+        Um jogo acessível para celular, computador e tablet, pensado para o ambiente escolar e também para o público em geral. Aqui, cada desafio apresenta uma situação e você decide qual é a resposta mais adequada.
+      </p>
 
-<div class="container">
+      <div class="chips">
+        <span class="chip">Visual simples e atrativo</span>
+        <span class="chip">Pode ser usado em aula ou fora dela</span>
+        <span class="chip">Feedback imediato</span>
+        <span class="chip">Pronto para apresentação</span>
+      </div>
 
-<h1>Mulher: Respeito</h1>
+      <div class="notice">
+        <strong>Importante:</strong> este jogo tem finalidade educativa. Em situação real de violência em andamento, o acionamento imediato correto é o <strong>190</strong>. Para orientação, informação e denúncia, o canal é o <strong>180</strong>.
+      </div>
 
-<div id="inicio">
-<p>Escolha sua categoria:</p>
+      <div class="category-card">
+        <label for="participantCategory">Categoria do participante:</label>
+        <select id="participantCategory">
+          <option value="">Selecione uma categoria</option>
+          <option value="Professor">Professor</option>
+          <option value="Estudante">Estudante</option>
+          <option value="Profissional administrativo">Profissional administrativo</option>
+          <option value="Outros">Outros</option>
+        </select>
+      </div>
 
-<select id="categoria">
-<option value="">Selecione</option>
-<option value="Professor">Professor</option>
-<option value="Estudante">Estudante</option>
-<option value="Administrativo">Profissional administrativo</option>
-<option value="Outros">Outros</option>
-</select>
+      <div class="hero-actions">
+        <button class="btn btn-primary" id="startBtn">Começar jogo</button>
+        <button class="btn btn-secondary" id="aboutBtn">Como funciona</button>
+      </div>
+    </section>
 
-<br><br>
+    <section class="screen" id="aboutScreen">
+      <div class="panel">
+        <div class="question-tag">ℹ️ Orientações</div>
+        <h2 class="question-title">Como jogar</h2>
+        <div class="situation">
+          Leia cada situação com atenção. Depois, escolha a alternativa que melhor identifica o tipo de violência, o direito violado ou o serviço correto da rede de proteção. Ao final, você verá sua pontuação e uma revisão das respostas.
+        </div>
+        <div class="bottom-actions">
+          <div class="microcopy">O jogo pode ser usado em sala, em blog escolar, site ou apresentação pública.</div>
+          <button class="btn btn-primary" id="playNowBtn">Jogar agora</button>
+        </div>
+      </div>
+    </section>
 
-<button onclick="iniciar()">Iniciar</button>
-</div>
+    <section class="screen" id="gameScreen">
+      <div class="panel">
+        <div class="topbar">
+          <div class="status-group">
+            <div class="pill" id="progressText">Questão 1 de 10</div>
+            <div class="pill" id="scoreText">Pontos: 0</div>
+            <div class="pill" id="participantText">Categoria: —</div>
+          </div>
+          <div class="pill" id="categoryText">Leitura e decisão</div>
+        </div>
 
-<div id="quiz" class="hidden">
+        <div class="progress-bar" aria-hidden="true">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
 
-<div class="progress">
-<div class="progress-bar" id="barra"></div>
-</div>
+        <div class="question-tag">🎯 Desafio</div>
+        <h2 class="question-title" id="questionTitle"></h2>
+        <div class="situation" id="situation"></div>
+        <div class="options" id="options"></div>
+        <div class="feedback" id="feedback"></div>
 
-<h2 id="pergunta"></h2>
-<div id="opcoes"></div>
+        <div class="bottom-actions">
+          <div class="microcopy">Escolha uma alternativa para continuar.</div>
+          <button class="btn btn-primary" id="nextBtn" disabled>Próxima</button>
+        </div>
+      </div>
+    </section>
 
-</div>
+    <section class="screen" id="resultScreen">
+      <div class="panel result-box">
+        <div class="medal">🏅</div>
+        <div class="level" id="levelText"></div>
+        <h2 class="question-title" style="text-align:center;">Resultado final</h2>
+        <div class="score" id="finalScore"></div>
+        <p class="summary" id="resultMessage"></p>
 
-<div id="final" class="hidden">
-<h2>Fim do jogo!</h2>
-<p id="resultado"></p>
-<button onclick="reiniciar()">Jogar novamente</button>
-</div>
+        <div class="hero-actions" style="justify-content:center; margin-top:20px;">
+          <button class="btn btn-primary" id="restartBtn">Jogar novamente</button>
+        </div>
 
-</div>
+        <div class="review" id="review"></div>
 
-<script>
+        <div class="footer-note">
+          Este jogo aborda tipos de violência, direitos violados e portas de entrada da rede de proteção, incluindo <strong>190</strong>, <strong>180</strong>, <strong>DEAM</strong>, <strong>Patrulha Maria da Penha</strong>, <strong>Casa Abrigo</strong> e <strong>rede de confiança</strong>.
+        </div>
+      </div>
+    </section>
+  </div>
 
-const perguntas = [
-{
-pergunta:"Violência psicológica inclui:",
-opcoes:["Ameaças e humilhação","Somente agressão física","Nada","Brincadeiras leves"],
-correta:0
-},
-{
-pergunta:"Ligar 180 serve para:",
-opcoes:["Emergência médica","Denunciar violência contra mulher","Comprar produtos","Nada"],
-correta:1
-},
-{
-pergunta:"Impedir mulher de trabalhar é:",
-opcoes:["Normal","Violência econômica","Apoio","Cuidado"],
-correta:1
-},
-{
-pergunta:"Perseguir mulher na rua é:",
-opcoes:["Elogio","Assédio","Cuidado","Respeito"],
-correta:1
-},
-{
-pergunta:"Violência física é:",
-opcoes:["Apenas gritar","Agressão corporal","Ignorar","Brincar"],
-correta:1
-},
-{
-pergunta:"O respeito começa com:",
-opcoes:["Controle","Empatia","Silêncio","Domínio"],
-correta:1
-},
-{
-pergunta:"Denunciar ajuda a:",
-opcoes:["Proteger","Esconder","Aumentar violência","Nada"],
-correta:0
-},
-{
-pergunta:"Igualdade significa:",
-opcoes:["Superioridade","Equilíbrio de direitos","Dominação","Diferença extrema"],
-correta:1
-},
-{
-pergunta:"Apoiar uma vítima é:",
-opcoes:["Julgar","Acolher","Ignorar","Expor"],
-correta:1
-},
-{
-pergunta:"Respeito gera:",
-opcoes:["Medo","Liberdade","Controle","Silêncio"],
-correta:1
-}
-];
+  <script>
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxfNz4l_ioE5liQ5qBq5Gah6STXvMjAQsvxpfFJZ_WDJOdzEBBEg1VfTiwGKTKpZYBn/exec";
 
-let atual = 0;
-let pontos = 0;
-let categoriaUsuario = "";
+    const questions = [
+      {
+        category: 'Tipo de violência',
+        title: '1. O que está acontecendo nessa situação?',
+        situation: 'Mariana sofre ameaças, humilhações e controle excessivo do companheiro dentro de casa. Ele decide com quem ela fala e tenta impedir que saia sozinha.',
+        options: ['Violência doméstica e familiar', 'Violência política', 'Tráfico de mulheres', 'Violência on-line'],
+        answer: 0,
+        explanation: 'Trata-se de violência doméstica e familiar, pois ocorre no ambiente de convivência e envolve controle, ameaça e violação da dignidade no lar.'
+      },
+      {
+        category: 'Tipo de violência',
+        title: '2. Como classificar essa prática?',
+        situation: 'Uma mulher teve imagens íntimas divulgadas sem autorização em grupos de mensagens e redes sociais, passando por constrangimento público.',
+        options: ['Violência doméstica', 'Violência on-line', 'Feminicídio', 'Violência política'],
+        answer: 1,
+        explanation: 'A divulgação de conteúdo íntimo sem consentimento caracteriza violência on-line e atinge a privacidade e a integridade moral.'
+      },
+      {
+        category: 'Direito violado',
+        title: '3. Qual direito é afetado aqui?',
+        situation: 'Uma mulher é seguida repetidamente pelo ex-companheiro nas ruas, perto do trabalho e nas proximidades de sua casa, sentindo medo constante.',
+        options: ['Direito à cidadania', 'Direito à liberdade de locomoção e à privacidade', 'Direito ao voto', 'Direito à autoria'],
+        answer: 1,
+        explanation: 'No stalking ou perseguição, há violação da privacidade e da liberdade de locomoção, além de abalo à integridade psicológica.'
+      },
+      {
+        category: 'Rede de proteção',
+        title: '4. Qual serviço deve ser acionado primeiro?',
+        situation: 'A agressão está acontecendo agora e a vítima corre risco imediato. É necessário socorro urgente.',
+        options: ['Ligue 180', 'CRAS', '190 - Polícia Militar', 'Casa Abrigo'],
+        answer: 2,
+        explanation: 'Em situação de emergência, o 190 é o canal para intervenção imediata e possibilidade de flagrante.'
+      },
+      {
+        category: 'Rede de proteção',
+        title: '5. Para registrar o crime e pedir proteção legal formal, qual é a melhor porta?',
+        situation: 'A violência não está acontecendo neste momento, mas a mulher quer registrar o caso e solicitar medida protetiva.',
+        options: ['DEAM', '190', 'Somente a escola', 'Telegram'],
+        answer: 0,
+        explanation: 'A DEAM é o serviço especializado para registro, encaminhamentos e solicitação de medidas protetivas.'
+      },
+      {
+        category: 'Orientação e denúncia',
+        title: '6. Qual canal é mais adequado nessa situação?',
+        situation: 'A mulher precisa de orientação sobre direitos, quer informações sobre a rede e pode fazer denúncia sem urgência imediata.',
+        options: ['Ligue 180', 'Patrulha Maria da Penha', 'Casa Abrigo', 'IML'],
+        answer: 0,
+        explanation: 'O Ligue 180 é canal de orientação, acolhimento, informação e denúncia, disponível de forma ampla.'
+      },
+      {
+        category: 'Fiscalização',
+        title: '7. Quem acompanha o cumprimento da medida protetiva?',
+        situation: 'A vítima já conseguiu medida protetiva concedida pela Justiça e precisa de fiscalização para verificar o cumprimento pelo agressor.',
+        options: ['Patrulha Maria da Penha', 'Hospital', 'CRAS', 'Aplicativo de edição'],
+        answer: 0,
+        explanation: 'A Patrulha Maria da Penha realiza acompanhamento e fiscalização preventiva do cumprimento das medidas.'
+      },
+      {
+        category: 'Proteção física',
+        title: '8. Em risco extremo, qual serviço se relaciona à proteção imediata fora do lar?',
+        situation: 'A mulher corre risco iminente de morte e precisa sair imediatamente do convívio com o agressor.',
+        options: ['Casa Abrigo', 'Somente WhatsApp', 'Blog escolar', 'Delegacia comum apenas'],
+        answer: 0,
+        explanation: 'Quando há risco iminente de morte, a Casa Abrigo representa uma forma de proteção física intensificada.'
+      },
+      {
+        category: 'Atendimento em rede',
+        title: '9. O que ajuda na reconstrução da vida após a emergência?',
+        situation: 'Depois da situação inicial, a mulher necessita de tratamento de saúde, garantia de direitos e proteção social para reorganizar a vida.',
+        options: ['Apenas um serviço isolado resolve tudo', 'Saúde, Justiça e Assistência Social atuam em rede', 'Somente redes sociais', 'Somente atendimento por telefone'],
+        answer: 1,
+        explanation: 'A reconstrução de vida depende da atuação articulada de saúde, justiça e assistência social.'
+      },
+      {
+        category: 'Plano de segurança',
+        title: '10. Qual atitude faz parte de um plano de segurança pessoal?',
+        situation: 'A pessoa está em situação de risco e precisa pensar em ações práticas de proteção.',
+        options: ['Ficar na cozinha durante a discussão', 'Evitar pensar em rotas de fuga', 'Combinar palavra-código com pessoas de confiança', 'Apagar todos os contatos de apoio'],
+        answer: 2,
+        explanation: 'Faz parte do plano de segurança combinar código de emergência, manter rede de confiança e conhecer rotas de fuga.'
+      }
+    ];
 
-const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxfNz4l_ioE5liQ5qBq5Gah6STXvMjAQsvxpfFJZ_WDJOdzEBBEg1VfTiwGKTKpZYBn/exec";
+    const startBtn = document.getElementById('startBtn');
+    const aboutBtn = document.getElementById('aboutBtn');
+    const playNowBtn = document.getElementById('playNowBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const restartBtn = document.getElementById('restartBtn');
 
-function iniciar(){
-categoriaUsuario = document.getElementById("categoria").value;
+    const aboutScreen = document.getElementById('aboutScreen');
+    const gameScreen = document.getElementById('gameScreen');
+    const resultScreen = document.getElementById('resultScreen');
 
-if(!categoriaUsuario){
-alert("Escolha uma categoria!");
-return;
-}
+    const progressText = document.getElementById('progressText');
+    const scoreText = document.getElementById('scoreText');
+    const participantText = document.getElementById('participantText');
+    const categoryText = document.getElementById('categoryText');
+    const progressFill = document.getElementById('progressFill');
+    const questionTitle = document.getElementById('questionTitle');
+    const situation = document.getElementById('situation');
+    const options = document.getElementById('options');
+    const feedback = document.getElementById('feedback');
+    const finalScore = document.getElementById('finalScore');
+    const resultMessage = document.getElementById('resultMessage');
+    const review = document.getElementById('review');
+    const levelText = document.getElementById('levelText');
+    const participantCategory = document.getElementById('participantCategory');
 
-document.getElementById("inicio").classList.add("hidden");
-document.getElementById("quiz").classList.remove("hidden");
+    let current = 0;
+    let score = 0;
+    let locked = false;
+    let answersLog = [];
+    let selectedCategory = '';
 
-mostrarPergunta();
-}
+    function showOnly(screen) {
+      [aboutScreen, gameScreen, resultScreen].forEach(el => el.classList.remove('active'));
+      if (screen) screen.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-function mostrarPergunta(){
-let p = perguntas[atual];
+    function sendToSheet(status) {
+      const payload = {
+        categoria: selectedCategory || 'Não informado',
+        pontos: score,
+        finalizou: status
+      };
 
-document.getElementById("pergunta").innerText = p.pergunta;
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify(payload)
+      }).catch(() => {});
+    }
 
-let html = "";
+    function validateCategory() {
+      selectedCategory = participantCategory.value;
+      if (!selectedCategory) {
+        alert('Por favor, selecione sua categoria antes de iniciar o jogo.');
+        return false;
+      }
+      return true;
+    }
 
-p.opcoes.forEach((opcao,i)=>{
-html += `<button onclick="responder(${i})">${opcao}</button><br>`;
-});
+    function startGame() {
+      if (!validateCategory()) return;
 
-document.getElementById("opcoes").innerHTML = html;
+      current = 0;
+      score = 0;
+      locked = false;
+      answersLog = [];
+      nextBtn.textContent = 'Próxima';
+      participantText.textContent = `Categoria: ${selectedCategory}`;
 
-atualizarBarra();
-}
+      sendToSheet('ACESSO');
 
-function responder(escolha){
-if(escolha === perguntas[atual].correta){
-pontos++;
-}
+      showOnly(gameScreen);
+      renderQuestion();
+    }
 
-atual++;
+    function renderQuestion() {
+      const q = questions[current];
+      locked = false;
+      nextBtn.disabled = true;
+      feedback.className = 'feedback';
+      feedback.innerHTML = '';
 
-if(atual < perguntas.length){
-mostrarPergunta();
-}else{
-finalizar();
-}
-}
+      progressText.textContent = `Questão ${current + 1} de ${questions.length}`;
+      scoreText.textContent = `Pontos: ${score}`;
+      categoryText.textContent = q.category;
+      questionTitle.textContent = q.title;
+      situation.textContent = q.situation;
+      progressFill.style.width = `${((current + 1) / questions.length) * 100}%`;
 
-function atualizarBarra(){
-let progresso = (atual / perguntas.length) * 100;
-document.getElementById("barra").style.width = progresso + "%";
-}
+      options.innerHTML = '';
+      q.options.forEach((optionText, index) => {
+        const button = document.createElement('button');
+        button.className = 'option';
+        button.textContent = optionText;
+        button.addEventListener('click', () => selectOption(index, button));
+        options.appendChild(button);
+      });
+    }
 
-function finalizar(){
-document.getElementById("quiz").classList.add("hidden");
-document.getElementById("final").classList.remove("hidden");
+    function selectOption(index, btn) {
+      if (locked) return;
+      locked = true;
 
-document.getElementById("resultado").innerText =
-"Você acertou " + pontos + " de " + perguntas.length;
+      const q = questions[current];
+      const optionButtons = Array.from(document.querySelectorAll('.option'));
+      const correct = index === q.answer;
 
-enviarDados();
-}
+      optionButtons.forEach((button, i) => {
+        button.disabled = true;
+        if (i === q.answer) button.classList.add('correct');
+      });
 
-function enviarDados(){
-fetch(URL_SCRIPT,{
-method:"POST",
-body: JSON.stringify({
-categoria: categoriaUsuario,
-pontos: pontos,
-finalizou: "SIM"
-})
-});
-}
+      if (correct) {
+        score += 1;
+        btn.classList.add('correct');
+        feedback.classList.add('show', 'ok');
+        feedback.innerHTML = `<strong>Resposta correta.</strong><br>${q.explanation}`;
+      } else {
+        btn.classList.add('wrong');
+        feedback.classList.add('show', 'no');
+        feedback.innerHTML = `<strong>Resposta incorreta.</strong><br>${q.explanation}`;
+      }
 
-function reiniciar(){
-location.reload();
-}
+      answersLog.push({
+        title: q.title,
+        category: q.category,
+        situation: q.situation,
+        chosen: q.options[index],
+        correct: q.options[q.answer],
+        hit: correct
+      });
 
-</script>
+      scoreText.textContent = `Pontos: ${score}`;
+      nextBtn.disabled = false;
+      nextBtn.textContent = current === questions.length - 1 ? 'Ver resultado' : 'Próxima';
+    }
 
+    function finishGame() {
+      showOnly(resultScreen);
+      finalScore.textContent = `${score} / ${questions.length}`;
+
+      let level = '';
+      let message = '';
+
+      if (score <= 4) {
+        level = 'Nível inicial';
+        message = 'Você começou a explorar a rede de proteção. Vale refazer o percurso para reforçar os canais e as decisões mais adequadas em cada situação.';
+      } else if (score <= 7) {
+        level = 'Nível em desenvolvimento';
+        message = 'Bom resultado. Você já reconhece várias situações, mas ainda pode fortalecer a leitura das portas de entrada, dos direitos violados e do plano de segurança.';
+      } else if (score <= 9) {
+        level = 'Nível protetor';
+        message = 'Ótimo desempenho. Você compreendeu bem os tipos de violência, a rede de atendimento e as principais decisões do percurso.';
+      } else {
+        level = 'Nível destaque';
+        message = 'Excelente. Você dominou o percurso do jogo com muita segurança e demonstrou ótima compreensão sobre proteção, direitos e encaminhamento.';
+      }
+
+      levelText.textContent = level;
+      resultMessage.textContent = message;
+
+      review.innerHTML = '';
+      answersLog.forEach(item => {
+        const box = document.createElement('div');
+        box.className = 'review-item';
+        box.innerHTML = `
+          <h4>${item.title}</h4>
+          <div style="color:#516177; margin-bottom:8px;"><strong>Categoria:</strong> ${item.category}</div>
+          <div style="margin-bottom:10px; line-height:1.6;">${item.situation}</div>
+          <div><strong>Sua resposta:</strong> ${item.chosen}</div>
+          <div><strong>Resposta correta:</strong> ${item.correct}</div>
+          <span class="review-badge ${item.hit ? 'ok' : 'no'}">${item.hit ? '✔ Acerto' : '✘ Erro'}</span>
+        `;
+        review.appendChild(box);
+      });
+
+      sendToSheet('SIM');
+    }
+
+    startBtn.addEventListener('click', startGame);
+    playNowBtn.addEventListener('click', startGame);
+    aboutBtn.addEventListener('click', () => showOnly(aboutScreen));
+    restartBtn.addEventListener('click', () => {
+      selectedCategory = '';
+      participantCategory.value = '';
+      showOnly(null);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    nextBtn.addEventListener('click', () => {
+      current += 1;
+      if (current < questions.length) {
+        renderQuestion();
+      } else {
+        finishGame();
+      }
+    });
+  </script>
 </body>
 </html>
