@@ -1,1 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mulher: Respeito</title>
 
+<style>
+body {
+font-family: 'Segoe UI', sans-serif;
+background: linear-gradient(135deg, #6a0dad, #b19cd9);
+margin: 0;
+padding: 20px;
+color: #333;
+}
+
+.container {
+max-width: 700px;
+margin: auto;
+background: white;
+padding: 25px;
+border-radius: 12px;
+box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+text-align: center;
+}
+
+h1 {
+color: #6a0dad;
+}
+
+button {
+padding: 12px 20px;
+margin: 8px;
+border: none;
+border-radius: 10px;
+background: #6a0dad;
+color: white;
+font-size: 16px;
+cursor: pointer;
+transition: 0.3s;
+}
+
+button:hover {
+background: #4b0082;
+}
+
+select {
+padding: 10px;
+font-size: 16px;
+border-radius: 8px;
+}
+
+.hidden {
+display: none;
+}
+
+.progress {
+height: 10px;
+background: #ddd;
+border-radius: 5px;
+margin-bottom: 15px;
+overflow: hidden;
+}
+
+.progress-bar {
+height: 10px;
+background: #6a0dad;
+width: 0%;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Mulher: Respeito</h1>
+
+<div id="inicio">
+<p>Escolha sua categoria:</p>
+
+<select id="categoria">
+<option value="">Selecione</option>
+<option value="Professor">Professor</option>
+<option value="Estudante">Estudante</option>
+<option value="Administrativo">Profissional administrativo</option>
+<option value="Outros">Outros</option>
+</select>
+
+<br><br>
+
+<button onclick="iniciar()">Iniciar</button>
+</div>
+
+<div id="quiz" class="hidden">
+
+<div class="progress">
+<div class="progress-bar" id="barra"></div>
+</div>
+
+<h2 id="pergunta"></h2>
+<div id="opcoes"></div>
+
+</div>
+
+<div id="final" class="hidden">
+<h2>Fim do jogo!</h2>
+<p id="resultado"></p>
+<button onclick="reiniciar()">Jogar novamente</button>
+</div>
+
+</div>
+
+<script>
+
+const perguntas = [
+{
+pergunta:"Violência psicológica inclui:",
+opcoes:["Ameaças e humilhação","Somente agressão física","Nada","Brincadeiras leves"],
+correta:0
+},
+{
+pergunta:"Ligar 180 serve para:",
+opcoes:["Emergência médica","Denunciar violência contra mulher","Comprar produtos","Nada"],
+correta:1
+},
+{
+pergunta:"Impedir mulher de trabalhar é:",
+opcoes:["Normal","Violência econômica","Apoio","Cuidado"],
+correta:1
+},
+{
+pergunta:"Perseguir mulher na rua é:",
+opcoes:["Elogio","Assédio","Cuidado","Respeito"],
+correta:1
+},
+{
+pergunta:"Violência física é:",
+opcoes:["Apenas gritar","Agressão corporal","Ignorar","Brincar"],
+correta:1
+},
+{
+pergunta:"O respeito começa com:",
+opcoes:["Controle","Empatia","Silêncio","Domínio"],
+correta:1
+},
+{
+pergunta:"Denunciar ajuda a:",
+opcoes:["Proteger","Esconder","Aumentar violência","Nada"],
+correta:0
+},
+{
+pergunta:"Igualdade significa:",
+opcoes:["Superioridade","Equilíbrio de direitos","Dominação","Diferença extrema"],
+correta:1
+},
+{
+pergunta:"Apoiar uma vítima é:",
+opcoes:["Julgar","Acolher","Ignorar","Expor"],
+correta:1
+},
+{
+pergunta:"Respeito gera:",
+opcoes:["Medo","Liberdade","Controle","Silêncio"],
+correta:1
+}
+];
+
+let atual = 0;
+let pontos = 0;
+let categoriaUsuario = "";
+
+const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxfNz4l_ioE5liQ5qBq5Gah6STXvMjAQsvxpfFJZ_WDJOdzEBBEg1VfTiwGKTKpZYBn/exec";
+
+function iniciar(){
+categoriaUsuario = document.getElementById("categoria").value;
+
+if(!categoriaUsuario){
+alert("Escolha uma categoria!");
+return;
+}
+
+document.getElementById("inicio").classList.add("hidden");
+document.getElementById("quiz").classList.remove("hidden");
+
+mostrarPergunta();
+}
+
+function mostrarPergunta(){
+let p = perguntas[atual];
+
+document.getElementById("pergunta").innerText = p.pergunta;
+
+let html = "";
+
+p.opcoes.forEach((opcao,i)=>{
+html += `<button onclick="responder(${i})">${opcao}</button><br>`;
+});
+
+document.getElementById("opcoes").innerHTML = html;
+
+atualizarBarra();
+}
+
+function responder(escolha){
+if(escolha === perguntas[atual].correta){
+pontos++;
+}
+
+atual++;
+
+if(atual < perguntas.length){
+mostrarPergunta();
+}else{
+finalizar();
+}
+}
+
+function atualizarBarra(){
+let progresso = (atual / perguntas.length) * 100;
+document.getElementById("barra").style.width = progresso + "%";
+}
+
+function finalizar(){
+document.getElementById("quiz").classList.add("hidden");
+document.getElementById("final").classList.remove("hidden");
+
+document.getElementById("resultado").innerText =
+"Você acertou " + pontos + " de " + perguntas.length;
+
+enviarDados();
+}
+
+function enviarDados(){
+fetch(URL_SCRIPT,{
+method:"POST",
+body: JSON.stringify({
+categoria: categoriaUsuario,
+pontos: pontos,
+finalizou: "SIM"
+})
+});
+}
+
+function reiniciar(){
+location.reload();
+}
+
+</script>
+
+</body>
+</html>
